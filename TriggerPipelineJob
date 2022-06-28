@@ -1,0 +1,31 @@
+// Declarative Pipeline code to trigger other pipeline jobs
+
+pipeline{
+	agent{label 'WORKER-NODE-NAME'}
+	stages{
+		stage ("1. UPDATE MACHINE"){
+			steps{
+				sh "sudo apt update"
+			}
+		}
+    stage ('2. Install necessary packages'){
+      steps{
+        sh "sudo apt-get install git"
+        sh "sudo apt-get install openjdk-11-jdk"
+        sh "sudo apt-get install maven"
+      }
+    }
+    stage ('3. Completion of Installation'){
+      steps{
+        sh "git --version"
+        sh "java --version"
+        sh "mvn --version"
+      }
+    }
+	}
+	post {
+	    success {
+	        build job: 'JOB/PIPELINE NAME THAT NEEDS TO BE TRIGGERED'
+	    }
+	}
+}
