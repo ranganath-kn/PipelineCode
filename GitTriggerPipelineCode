@@ -1,0 +1,24 @@
+// Pipeline code to start automatically when there is a push in GitHub Branch using Webhooks
+
+pipeline{
+	agent {label 'agent-name'}
+	stages{
+		stage('1. Perform Git Initialisation'){
+			steps{
+				git branch:'branch', url: 'URL for Git repo' //This will trigger the job using GitHub Webhook if there is a change in the specified branch name 
+			}
+		}
+		stage('2. Install Required Packages'){
+			steps{
+				sh "sudo apt-get install openjdk-11-jdk"
+				sh "sudo apt-get install git"
+				sh "sudo apt-get install maven"
+			}
+		}
+	}
+	post{
+		success{
+			build job: 'job-name'
+		}
+	}
+}
