@@ -25,7 +25,7 @@ pipeline{
 	}
 	post {
 	    success {
-	        build job: 'JOB/PIPELINE NAME THAT NEEDS TO BE TRIGGERED'
+	        build job: 'JOB/PIPELINE NAME THAT NEEDS TO BE TRIGGERED' //This Post step will trigger the specified pipeline when the current job status is success
 	    }
 	}
 }
