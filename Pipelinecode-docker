@@ -1,0 +1,35 @@
+// Pipeline code to deploy a Docker Containerized Application using GitHub, Jenkins, Docker and Apache2 server
+// Dockerfile: https://github.com/ranganath-kn/DockerFiles/blob/main/dockerfile1
+
+pipeline{
+    agent {label 'node-label'}
+    stages{
+        // Trigger Pipeline using GitHub Webhook
+        stage('1. Initialize Git by Webhook'){
+            steps{
+                git branch:'branchname', url:'URL FOR GITHUB REPO'
+            }
+        }
+        // Cleaning the temporary directory
+        stage('2. Clean the build directory'){
+            steps{
+                sh 'rm -rf /home/ubuntu/build-directory/'
+            }
+        }
+        // Copying code from Jenkins workspace to Temporary directory for post actions
+        stage('3. Copy code files to build directory'){
+            steps{
+                sh 'cp -r /path-to-jenkins-workspace/workspace/job-name/ /home/ubuntu/build-directory/'
+            }
+        }
+    }
+    post{
+        success{
+            // Remove older version image, build the dockerfile, remove old containers built by the docker file, run docker images and map it to port 82 in local
+            sh 'sudo docker rmi -f dockerhub-username/docker-imagename'
+            sh 'sudo docker build /home/ubuntu/temp-directory/ -t dockerhub-username/docker-imagename'
+            sh 'sudo docker rm -f $(sudo docker ps -a -q)'
+            sh 'sudo docker run -dit -p 82:80 ranganathkn/docker-image'
+        }
+    }
+}
